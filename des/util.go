@@ -10,3 +10,17 @@ func validateKey(key string) error {
 	}
 	return nil
 }
+
+// Breaks a message into blocks of size N.
+func blocksFromMessage(message string, blockSize int) []string {
+	if blockSize >= len(message) {
+		return []string{message}
+	}
+
+	blocks := make([]string, 0)
+	for i := 0; i < len(message); i += blockSize {
+		block := message[i:min(i+blockSize, len(message))]
+		blocks = append(blocks, block)
+	}
+	return blocks
+}
