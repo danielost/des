@@ -1,17 +1,33 @@
 package des
 
-import "fmt"
+import (
+	"encoding/hex"
+	"fmt"
+	"math"
+	"strings"
+)
 
-// Validates hex key.
-// TODO: check key strength.
 func validateKey(key string) error {
+	alphabet := "1234567890abcdef"
 	if len(key) > 16 {
 		return fmt.Errorf("key is too long")
+	}
+	for _, r := range key {
+		if !strings.ContainsRune(alphabet, r) {
+			return fmt.Errorf("key contains a prohibited symbol - [%s]", string(r))
+		}
+	}
+	binary, _ := hexToBinary(key)
+	for len(binary) < 64 {
+		binary = "0" + binary
+	}
+	fmt.Printf("Key entropy is %.4f\n", calculateEntropy(binary, "01"))
+	if entropy := calculateEntropy(binary, "01"); entropy < 0.9 {
+		return fmt.Errorf("key is too weak, entropy is %.4f", entropy)
 	}
 	return nil
 }
 
-// Breaks a message into blocks of size N.
 func blocksFromMessage(message string, blockSize int) []string {
 	if blockSize >= len(message) {
 		return []string{message}
@@ -23,4 +39,35 @@ func blocksFromMessage(message string, blockSize int) []string {
 		blocks = append(blocks, block)
 	}
 	return blocks
+}
+
+func stringToBinary(s string) (binary string) {
+	for _, r := range s {
+		binary = fmt.Sprintf("%s%.8b", binary, r)
+	}
+	return
+}
+
+func hexToBinary(hexString string) (string, error) {
+	hexBytes, err := hex.DecodeString(hexString)
+	if err != nil {
+		return "", err
+	}
+
+	var binaryString strings.Builder
+	for _, b := range hexBytes {
+		binaryString.WriteString(fmt.Sprintf("%08b", b))
+	}
+
+	return binaryString.String(), nil
+}
+
+func calculateEntropy(s string, alphabet string) float64 {
+	sum := 0.0
+	for _, r := range alphabet {
+		c := strings.Count(s, string(r))
+		p := float64(c) / float64(len(s))
+		sum += -p * math.Log2(p)
+	}
+	return sum
 }
