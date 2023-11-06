@@ -95,32 +95,13 @@ func substituteBlock(s []string) []string {
 		{6, 10, 9, 4}, {15, 3, 12, 10}, {11, 7, 14, 8}, {1, 4, 2, 13},
 		{10, 12, 0, 15}, {9, 5, 6, 12}, {3, 6, 10, 9}, {14, 11, 13, 0},
 		{5, 0, 15, 3}, {0, 14, 3, 5}, {12, 9, 5, 6}, {7, 2, 8, 11}}
-
-	var resultString string
-	var substitutionResult int
+	substitutionMatrixes := [][16][4]int{substitutionMatrix1, substitutionMatrix2, substitutionMatrix3, substitutionMatrix4, substitutionMatrix5, substitutionMatrix6, substitutionMatrix7, substitutionMatrix8}
+	resultString := ""
 
 	for i, dividedBlock := range dividedBlocks {
 		xMatrix, _ := strconv.ParseUint(strings.Join(dividedBlock[1:5], ""), 2, 0)
 		yMatrix, _ := strconv.ParseUint(strings.Join([]string{dividedBlock[0], dividedBlock[5]}, ""), 2, 0)
-
-		switch i {
-		case 0:
-			substitutionResult = substitutionMatrix1[xMatrix][yMatrix]
-		case 1:
-			substitutionResult = substitutionMatrix2[xMatrix][yMatrix]
-		case 2:
-			substitutionResult = substitutionMatrix3[xMatrix][yMatrix]
-		case 3:
-			substitutionResult = substitutionMatrix4[xMatrix][yMatrix]
-		case 4:
-			substitutionResult = substitutionMatrix5[xMatrix][yMatrix]
-		case 5:
-			substitutionResult = substitutionMatrix6[xMatrix][yMatrix]
-		case 6:
-			substitutionResult = substitutionMatrix7[xMatrix][yMatrix]
-		case 7:
-			substitutionResult = substitutionMatrix8[xMatrix][yMatrix]
-		}
+		substitutionResult := substitutionMatrixes[i][xMatrix][yMatrix]
 		resultString += fmt.Sprintf("%04b", substitutionResult)
 	}
 
