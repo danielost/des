@@ -1,1 +1,1 @@
-# des
+# Data Encryption Standard (DES)
